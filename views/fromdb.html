@@ -31,6 +31,7 @@
                                 <th scope="col">AkseloX</th>
                                 <th scope="col">AkseloY</th>
                                 <th scope="col">AkseloZ</th>
+                                <th scope="col">Suhu</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -71,7 +72,7 @@
 
         function reload(){
             $.ajax({
-                url:"http://localhost:3000/reload",
+                url:"http://127.0.0.1:3000/reload",
                 dataType:"JSON",
                 type:"GET",
                 success:function(data){
@@ -85,6 +86,7 @@
                         a += `<td>`+data[i].akselox+`</td>`;
                         a += `<td>`+data[i].akseloy+`</td>`;
                         a += `<td>`+data[i].akseloz+`</td>`;
+                        a += `<td>`+data[i].suhu+` °C</td>`;
                         a += `<tr>`;
                         }
 

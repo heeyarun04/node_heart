@@ -1,66 +1,330 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Data Spreadsheet</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-</head>
-<body style="background: lightgray">
+<%- include('header.html') %>
 
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-12">
-
-               
-                <div class="card border-0 shadow rounded">
-                    <div class="card-body">
-                        <div class="col-8" >
-                                <h1 class="text-white bg-success" style="padding: 10px; border-radius: 10px;">GET DATA FROM SPREADSHEET</h1>
-                                                        
-                        </div>
-                                      
-                        <table class="table table-bordered">
-                            <thead>
-                              <tr>
-                                <th scope="col">NO.</th>
-                                <th scope="col">TGL</th>
-                                <th scope="col">WAKTU</th>
-                                <th scope="col">KIPAS</th>
-                                <th scope="col">HUMIDIFIER</th>
-                                <th scope="col">SUHU</th>
-                                <th scope="col">KELEMBABAN</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                                <% for(var i = 1; i< data.length; i++) {%>  
-                                        <tr>
-                                            <th scope="row" class="text-center"><%= (i) %></th>
-                                            <td><%= data[i].columnA%></td>
-                                            <td><%= data[i].columnB%></td>
-                                            <td><%= data[i].columnC%></td>
-                                            <td><%= data[i].columnD%></td>
-                                            <td><%= data[i].columnE%></td>
-                                            <td><%= data[i].columnF%></td>
-                                          
-                                        </tr>
-                                  
-                                    
-                                <% } %>    
-                            </tbody>
-                        </table>  
-                    </div>
+      <!-- partial -->
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-md-12 grid-margin">
+              <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                  <h1 class="font-weight-bold">Selamat Datang!</h1>
+                <h6 class="font-weight-normal mb-0">Di Monitoring Smartwatch. <span class="text-primary">Jangan lupa untuk mengikuti saran dari AI ya!</span></h6>
                 </div>
+                <div class="col-12 col-xl-4">
+                 <div class="justify-content-end d-flex">
+                  <div class="dropdown flex-md-grow-1 flex-xl-grow-0 m-2">
+                    <label>Dari</label>
+                   <input type="datetime-local" name="dari" id="dari" class="form-control">
+                  </div>
+                  <div class="dropdown flex-md-grow-1 flex-xl-grow-0 m-2">
+                    <label> Smpai</label>
+                   <input type="datetime-local" name="sampai" id="sampai" class="form-control">
+                  </div>
+                  <div class="dropdown flex-md-grow-1 flex-xl-grow-0 m-2">
+                    <br>
+                    <button class="btn btn-success btn-sm  " id="tgl" style="margin-top: 10px !important;" onclick="update_tgl()"><i class="mdi mdi-calendar"></i></button>
+                  </div>
+                 
+                 </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 grid-margin stretch-card">
+              <div class="card tale-bg">
+                <div class="card-people mt-auto">
+                  <img src="images/dashboard/people.svg" alt="people">
+                  <div class="weather-info">
+                    <div class="d-flex">
+                      <div>
+                        <h2 class="mb-0 font-weight-normal"><i class="icon-sun mr-2"></i><span id="temp"></span></h2>
+                      </div>
+                      <div class="ml-2">
+                        <h4 class="location font-weight-normal" id="city"></h4>
+                        <h6 class="font-weight-normal">Indonesia</h6>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 grid-margin transparent">
+              <div class="row">
+                <div class="col-md-6 mb-4 stretch-card transparent">
+                  <div class="card card-light-danger">
+                    <div class="card-body">
+                      <p class="mb-1" >Detak Jantung Anda Sekarang</p>
+                      <h2 class=" mb-2" id="heartNew"></h2>
+                      <p></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 mb-4 stretch-card transparent">
+                  <div class="card card-dark-blue">
+                    <div class="card-body">
+                      <p class="mb-1">Tingkat Oksigen Anda</p>
+                      <h1 class=" mb-2" id="oxyNew"></h1>
+                      
+                  
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-4 mb-lg-0 stretch-card transparent">
+                  <div class="card card-light-blue">
+                    <div class="card-body">
+                      <p class="mb-2">Keaktifan Bergerak</p>
+                      <h2 class="badge bg-white text-black" style="font-size: 18px;" id="gerakNew"></h2>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 stretch-card transparent">
+                  <div class="card card-tale">
+                    <div class="card-body">
+                      <p class="mb-2">Suhu Anda Saat Ini</p>
+                      <h1 class="" id="suhuNew"></h1>
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <p class="card-title">Detak Jantung & Tingkat Pernafasan</p>
+                     <p class="font-weight-500">Hasil Pengukuran dari smartwatch menggunakan sensor MAX30100 dengan tingkat keakuratan hingga 90%.</p>
+                     
+                  <div class="d-flex flex-wrap mb-2">
+                    <div class="mr-4 mt-3">
+                      <p class="text-muted"> HR Tertinggi</p>
+                      <h3 class="text-primary fs-20 font-weight-medium" id="hrMax"></h3>
+                    </div>
+                    <div class="mr-4 mt-3">
+                      <p class="text-muted"> HR Terendah</p>
+                      <h3 class="text-primary fs-20 font-weight-medium" id="hrMin"></h3>
+                    </div>
+                    <div class="mr-4 mt-3">
+                      <p class="text-muted">Oxy Tertinggi</p>
+                      <h3 class="text-primary fs-30 font-weight-medium" id="oxyMax"></h3>
+                    </div>
+                    <div class="mr-4 mt-3">
+                      <p class="text-muted">Oxy  Terendah</p>
+                      <h3 class="text-primary fs-30 font-weight-medium" id="oxyMin"></h3>
+                    </div>
+                    
+                  </div>
+                  <canvas id="order-chart" style="height: 500px !important"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                 <div class="d-flex justify-content-between">
+                  <p class="card-title">Suhu</p>
+                 </div>
+                  <p class="font-weight-500">Pengukuran Menggunakan Sensor MLX90614. Sensor ini dapat mengukur obyek dengam tingkat akurasi tertinggi.</p>
+                  <div id="sales-legend" class="chartjs-legend mt-4 mb-2"></div>
+                  <canvas id="sales-chart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card position-relative">
+                <div class="card-body">
+                  <div id="detailedReports" class="carousel slide detailed-report-carousel position-static pt-2" data-ride="carousel">
+                    <div class="carousel-inner">
+
+                      <div class="carousel-item active">
+                        <div class="row">
+                          <div class="col-md-12 col-xl-3 d-flex flex-column justify-content-start">
+                            <div class="ml-xl-4 mt-3">
+                            <p class="card-title">Pergerakan</p>
+                              <h1 class="text-primary">AKSELERASI</h1>
+                              <p class="mb-2 mb-xl-0">Pergerakan dihitung dengan sensor Akselometer MPU6050. Angka merupakan hasil dari perubahan pergerakan aktif sensor.</div>  
+                            </div>
+                          <div class="col-md-12 col-xl-9">
+                            <div class="row">
+                              <div class="col-md-6 border-right">
+                                <div class="table-responsive mb-3 mb-md-0 mt-3">
+                                  <br>
+                                  <br>
+                                  <h5>Penghitungan Keaktifan</h5>
+                                <!--   <table class="table table-borderless report-table">
+                                     <tr>
+                                      <td class="text-muted">Tidak Aktif</td>
+                                      <td class="w-100 px-0">
+                                        <div class="progress progress-md mx-4">
+                                          <div class="progress-bar bg-danger" id="keaktifan_3" role="progressbar" style="" aria-valuenow="95" aria-valuemin="0" aria-valuemax="5"></div>
+                                        </div>
+                                      </td>
+                                      <td><h5 class="font-weight-bold mb-0" id="value_keaktifan_1"></h5></td>
+                                    </tr>
+
+                                    <tr>
+                                      <td class="text-muted">Normal</td>
+                                      <td class="w-100 px-0">
+                                        <div class="progress progress-md mx-4">
+                                          <div class="progress-bar bg-warning" id="keaktifan_2" role="progressbar" style="width: 30%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                      </td>
+                                      <td><h5 class="font-weight-bold mb-0" id="value_keaktifan_2"></h5></td>
+                                    </tr>
+                                    <tr>
+
+                                      <td class="text-muted">Aktif </td>
+                                      <td class="w-100 px-0">
+                                        <div class="progress progress-md mx-4">
+                                          <div class="progress-bar bg-primary" id="keaktifan_3" role="progressbar" style="width: 70%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                      </td>
+                                      <td><h5 class="font-weight-bold mb-0" id="value_keaktifan_3"></h5></td>
+                                    </tr>
+                                   
+                                   
+                                  </table> -->
+
+                                  <canvas id="keaktifan_1" style="height: 500px !important" height="300"></canvas>
+                                </div>
+
+                              </div>
+                              <div class="col-md-6 mt-3">
+                                <!-- <canvas id="north-america-chart"></canvas>
+                                <div id="north-america-legend"></div> -->
+                                <br>
+                                <br>
+                                <h5>Berdasarkan data disamping, Pergerakan anda dari <span id="value_dari"></span> Sampai: <span id="value_dari"></span> dinyatakan:</h5>
+
+                                <br>
+                                <div class="badge badge-pill  text-white" id="badge_aktif">
+                                  <h3 id="keaktifan_2">Normal</h3>
+
+                                </div>
+                                <br>
+                                <br>
+                                 <p id="saran_2">.</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                    </div>
+                 <!--    <a class="carousel-control-prev" href="#detailedReports" role="button" data-slide="prev">
+                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#detailedReports" role="button" data-slide="next">
+                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                      <span class="sr-only">Next</span>
+                    </a> -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 ">
+            <h3 >Tips Dari AI</h3>
+            <br>
+            <div class="row">
+              <div class="col-3">
+                <div class="card rounded">
+                  <div class="card-header bg-danger">
+                    <p class="card-title text-white"><i class="mdi mdi-heart-pulse"></i> Detak Jantung</p>
+                  </div>
+                  <div class="card-body">
+                    <p>Detak jantung anda saat ini adalah <span id="currentHR"></span> BPM. Angka ini tergolong <b id="ketHR"></b>. <span id="perluHR"></span> </p>
+                    <br>
+                    <a href="/detak" class="btn btn-success">Selengkapnya <i class=" mdi mdi-arrow-collapse-right menu-icon" style="margin-left: 5px; float: right;"></i></a>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-3">
+                <div class="card rounded">
+                  <div class="card-header bg-primary">
+                    <p class="card-title text-white"><i class="mdi mdi-weather-windy"></i> Pernafasan</p>
+                  </div>
+                  <div class="card-body">
+                      <p>Tingkat pernafasan anda saat ini adalah <span id="currentOxy"></span> %. Angka ini tergolong <b id="ketOxy"></b>. <span id="perluOxy"></span> </p>
+                         <br>
+                    <a href="/detak" class="btn btn-success">Selengkapnya <i class=" mdi mdi-arrow-collapse-right menu-icon" style="margin-left: 5px; float: right;"></i></a>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-3">
+                <div class="card rounded">
+                  <div class="card-header bg-info">
+                    <p class="card-title text-white"><i class="mdi mdi-temperature-celsius"></i> Suhu Tubuh</p>
+                  </div>
+                  <div class="card-body">
+                    <p>Suhu Tubuh anda saat ini adalah <span id="currentSuhu"></span>  °C. Angka ini tergolong <b id="ketSuhu"></b>. <span id="perluSuhu"></span> </p>
+                       <br>
+                    <a href="/detak" class="btn btn-success">Selengkapnya <i class=" mdi mdi-arrow-collapse-right menu-icon" style="margin-left: 5px; float: right;"></i></a>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-3">
+                <div class="card rounded">
+                  <div class="card-header bg-warning">
+                    <p class="card-title text-white"><i class="mdi mdi-run"></i> Akselerasi</p>
+                  </div>
+                  <div class="card-body">
+                    <p>Pergerakan anda saat ini  tergolong <b id="ketAkselo"></b>. <span id="perluAkselo"></span> </p>
+                       <br>
+                    <a href="/detak" class="btn btn-success">Selengkapnya <i class=" mdi mdi-arrow-collapse-right menu-icon" style="margin-left: 5px; float: right;"></i></a>
+                  </div>
+                </div>
+              </div>
+
+
+            </div>
+          </div>
+          <br>
+          <br>
+          <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <p class="card-title">All Data</p>
+                  <div class="row">
+                    <div class="col-12">
+                      <div class="table-responsive">
+                        <table id="example1" class="display expandable-table table-stripped" style="width:100%">
+                          <thead>
+                            <tr>
+                               <th scope="col">NO.</th>
+                                <th scope="col">Heart Rate</th>
+                                <th scope="col">SPO2</th>
+                                <th scope="col">AkseloX</th>
+                                <th scope="col">AkseloY</th>
+                                <th scope="col">AkseloZ</th>
+                                <th scope="col">Suhu</th>
+                                <th scope="col">Waktu</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            
+                          </tbody>
+                      </table>
+                      </div>
+                    </div>
+                  </div>
+                  </div>
+                </div>
+              </div>
             </div>
         </div>
-    </div>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    </script>
-
-</body>
-</html>
+        <!-- content-wrapper ends -->
+        <!-- partial:partials/_footer.html -->
+<%- include('footer.html') %>
+        
