@@ -1,0 +1,147 @@
+<%- include('header.html') %>
+
+      <!-- partial -->
+      <div class="main-panel">
+        <div class="content-wrapper">
+        	<div class="col-12">
+        		<div class="row">
+        			<div class="col-3 d-flex justify-content-start" style="margin-top: 0px;">
+        				<h2 >Monitoring Pernafasan</h2>
+        			</div>
+        			<div class=" col-9 d-flex justify-content-end" style="margin-top: -20px;">
+        				<div class="dropdown flex-md-grow-1 flex-xl-grow-0 m-2">
+		                    <label>Dari</label>
+		                   <input type="datetime-local" name="dari" id="dari" class="form-control">
+		                  </div>
+		                <div class="dropdown flex-md-grow-1 flex-xl-grow-0 m-2">
+		                    <label> Sampai</label>
+		                   <input type="datetime-local" name="sampai" id="sampai" class="form-control">
+		                  </div>
+		                <div class="dropdown flex-md-grow-1 flex-xl-grow-0 m-2">
+		                    <br>
+		                    <button class="btn btn-success btn-sm  " id="tgl" style="margin-top: 10px !important;" onclick="update_tgl()"><i class="mdi mdi-calendar"></i></button>
+		                </div>
+        			</div>
+        			
+
+        		</div>
+
+        	
+        		
+        	</div>
+
+        	<br>
+        		<div class="col-12">
+        			<div class="row">
+	        			<div class="col-9">
+	        				<div class="card">
+	        					<div class="card-header bg bg-info">
+	        						<h5 class="text-white">Grafik Pernafasan Anda</h5>
+	        					</div>
+	        					<div class="card-body">
+	        						<div class="canva">
+	        							<canvas id="nafas_page"></canvas>
+	        						</div>
+	        					</div>
+	        				</div>
+	        			</div>
+	        			<div class="col-3">
+	        				<div class="card">
+	        					<div class="card-body">
+	        						<h5>Pernafasan Anda Sekarang:</h5>
+	        						<h3 id="nafas_sekarang"></h3>
+	        					</div>
+	        				</div>
+	        				<br>
+	        				<div class="card">
+	        					<div class="card-body">
+	        						<h5>Rata-rata Nafas:</h5>
+	        						<h3 id="avg_nafas"></h3>
+	        					</div>
+	        				</div>
+	        				<br>
+	        				<div class="card">
+	        					<div class="card-body">
+	        						<h5>Modus:</h5>
+	        						<h3 id="modus_nafas"></h3>
+	        					</div>
+	        				</div>
+	        				<br>
+	        				<div class="card">
+	        					<div class="card-body">
+	        						<h5>Keterangan:</h5>
+	        						<h3 id="ket_nafas"></h3>
+	        					</div>
+	        				</div>
+
+	        			</div>
+        			</div>
+        		</div>
+
+        			<br>
+
+        	<div class="col-12">
+        		<div class="row">
+        			<div class="col-3">
+        				<div class="card">
+        					<div class="card-header bg-success">
+        						<h4 class="text-white"><i class="mdi mdi-check"></i> What To Do</h4>
+        					</div>
+        					<div class="card-body">
+        						<div id="what_to_do_nafas">
+        							
+        						</div>
+        					</div>
+        				</div>
+        			</div>
+
+        			<div class="col-3">
+        				<div class="card">
+        					<div class="card-header bg-danger">
+        						<h4 class="text-white"> <i class="mdi mdi-close"></i> What Not to Do</h4>
+        					</div>
+        					<div class="card-body">
+        						<div id="what_not_to_do_nafas">
+        							
+        						</div>
+        					</div>
+        				</div>
+        			</div>
+
+        			<div class="col-3">
+        				<div class="card">
+        					<div class="card-header bg-success">
+        						<h4 class="text-white"><i class="mdi mdi-check"></i> What To Eat</h4>
+        					</div>
+        					<div class="card-body">
+        						<div id="what_to_eat_nafas">
+        							
+        						</div>
+        					</div>
+        				</div>
+        			</div>
+
+        			<div class="col-3">
+        				<div class="card">
+        					<div class="card-header bg-danger">
+        						<h4 class="text-white"> <i class="mdi mdi-close"></i>  What Not To eat</h4>
+        					</div>
+        					<div class="card-body">
+        						<div id="what_not_to_eat_nafas">
+        							
+        						</div>
+        					</div>
+        				</div>
+        			</div>
+        		</div>
+        	</div>
+
+
+
+
+
+        </div>
+     	
+
+<%- include('footer.html') %>
+        

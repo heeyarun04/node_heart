@@ -1,0 +1,1644 @@
+<footer class="footer">
+          <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © PT. SIAB   <a href="https://www.bootstrapdash.com/" target="_blank">
+          </div>
+        </footer>
+        <!-- partial -->
+      </div>
+      <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+
+  <!-- plugins:js -->
+  <script src="vendors/js/vendor.bundle.base.js"></script>
+  <!-- endinject -->
+  <!-- Plugin js for this page -->
+  <script src="vendors/chart.js/Chart.min.js"></script>
+  <script src="vendors/datatables.net/jquery.dataTables.js"></script>
+  <script src="vendors/datatables.net-bs4/dataTables.bootstrap4.js"></script>
+  <script src="js/dataTables.select.min.js"></script>
+
+  <!-- End plugin js for this page -->
+  <!-- inject:js -->
+  <script src="js/off-canvas.js"></script>
+  <script src="js/hoverable-collapse.js"></script>
+  <script src="js/template.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/todolist.js"></script>
+  <!-- endinject -->
+  <!-- Custom js for this page-->
+  <!-- <script src="js/dashboard.js"></script> -->
+  <script src="js/Chart.roundedBarCharts.js"></script>
+  <!-- End custom js for this page-->
+</body>
+
+</html>
+
+<script type="text/javascript">
+
+      const currentDate = new Date();
+
+const year = currentDate.getFullYear();
+const month = currentDate.getMonth() + 1; // Note that months are 0-based (January is 0)
+const day = currentDate.getDate();
+const hours = currentDate.getHours();
+const minutes = currentDate.getMinutes();
+
+
+
+
+    $('document').ready(function(){
+
+      openWheater();
+
+      const currentDate = new Date();
+
+const year = currentDate.getFullYear();
+const month = currentDate.getMonth() + 1; // Note that months are 0-based (January is 0)
+const day = currentDate.getDate();
+const hours = currentDate.getHours();
+const minutes = currentDate.getMinutes();
+const seconds = currentDate.getSeconds();
+
+
+            reload(0,0);
+            heartNew();
+            oxyNew();
+            gerakNew();
+            suhuNew();
+            grafikHr(0,0);
+            keaktifan_1(0,0);
+            keaktifan_2(0,0);
+            hrMax(0,0);
+            hrMin(0,0);
+            oxyMax(0,0);
+            oxyMin(0,0);
+
+            detak_page(0,0);
+            nafas_page(0,0);
+            suhu_page(0,0)
+            akselo_page(0,0)
+
+            pergerakan_sekarang(0,0);
+
+            getAllJadwal();
+        });
+
+    function openWheater(){
+      $.ajax({  
+                url:"https://api.openweathermap.org/data/2.5/weather?q=Surakarta&appid=6c1afb710ddeda10ae6ee2390c228126&units=metric",
+                dataType:"JSON",
+                type:"GET",
+                success:function(data){
+                    var a = "";
+                    $("#city").html(data.name);
+                    $("#temp").html(parseInt(data.main.temp)+" °C");
+                  }
+                 
+            })
+    }
+
+
+function formatDate(inputDate) {
+  const date = new Date(inputDate);
+  
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+  const year = String(date.getFullYear()).substring(2);
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+
+  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+}
+
+
+
+function formatTime(inputDate) {
+  const date = new Date(inputDate);
+  
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+
+  return `${hours}:${minutes}`;
+}
+
+
+function reload(dari,sampai){
+  if(dari == 0 || sampai == 0){
+    dari = `${year}-${month}-${day} 00:00:00`;
+    sampai = `${year}-${month}-${day} 23:59:59`;
+  }
+
+            $.ajax({  
+                url:"/reload?dari="+dari+"&sampai="+sampai,
+                dataType:"JSON",
+                type:"GET",
+                success:function(data){
+                    var a = "";
+
+                    for (var i = 0; i < data.length; i++) {
+                        a += `<tr>`;
+                        a += `<td>`+ parseInt(i+1) +`</td>`;
+                        a += `<td>`+data[i].hr+`BPM</td>`;
+                        a += `<td>`+data[i].spo2+`%</td>`;
+                        a += `<td>`+data[i].akselox+`</td>`;
+                        a += `<td>`+data[i].akseloy+`</td>`;
+                        a += `<td>`+data[i].akseloz+`</td>`;
+                        a += `<td>`+data[i].suhu+` °C</td>`;
+                        a += `<td>`+formatDate(data[i].timestamp)+` </td>`;
+                        a += `<tr>`;
+                        }
+
+                        $("#example1 tbody").html(a);
+
+
+                       //setTimeout(reload, 1000);
+                }
+            })
+        }
+
+          function heartNew(){
+            $.ajax({
+                url:"/heartNew",
+                dataType:"JSON",
+                type:"GET",
+                success:function(data){
+                    var a = "";
+
+                    var jumlah = 0;
+                    for (var i = 0; i < data.length; i++) {
+                     $("#heartNew").html(data[i].hr+" BPM");
+                     $("#detak_sekarang").html(data[i].hr+" BPM");
+
+                  
+
+
+
+                     var hr = data[i].hr;
+                     $("#currentHR").html(hr);
+
+                     if(hr <=60){
+                        var ketHR = "Rendah";
+                        var perluHR = "Anda Perlu Olahraga Ringan atau Aktivitas Aerobik. Selain itu anda harus membuat pola tidur yang baik. Dan makanan yang sehat";
+
+                        var what_to_do = "<li>Pastikan Posisi Tubuh yang Aman</li> <li>Amati gejala lain yang mungkin terkait dengan detak jantung rendah, seperti pusing, kelelahan, atau pingsan.</li><li>Ikuti Instruksi Tenaga Medis: Ketika bantuan medis tiba, ikuti instruksi dari tenaga medis dengan seksama.</li>";
+
+                        var what_not_to_do = "<li>Catat gejala yang dialami dan riwayat kesehatan yang relevan.</li><li>Hindari melakukan aktivitas fisik berat.</li><li>Jangan mengemudi atau melakukan aktivitas yang memerlukan konsentrasi tinggi.</li><li>Hindari mengonsumsi minuman berkafein.</li>";
+
+                        var what_to_eat = "<li>Ikan Berlemak.</li><li>Sayuran Hijau Daun.</li><li>Buah-buahan Beri.</li><li>Kacang-kacangan dan Biji-bijian.</li><li>Avokad.</li><li>Oatmeal.</li><li>Biji-bijian Utuh.</li><li>Minyak Zaitun.</li>";
+
+                        var what_not_to_eat = "<li>Garam Berlebihan</li><li>Makanan Tinggi Lemak Jenuh</li><li>Makanan Tinggi Kolesterol</li><li>Makanan Cepat Saji dan Makanan Olahan</li><li>Makanan Tinggi Gula dan Pemanis Buatan</li>";
+
+                     }else if(hr > 60 && hr <=99){
+
+                       //setTimeout(reload, 1000);
+                        var ketHR = "Normal";
+                        var perluHR = "Ini menunjukkan bahwa jantung Anda bekerja dengan baik untuk memompa darah ke seluruh tubuh dalam ritme yang sehat. Meskipun memiliki detak jantung dalam kisaran normal adalah tanda baik, selalu bijak untuk menjaga gaya hidup sehat, termasuk olahraga teratur, pola makan seimbang, tidur yang cukup";
+
+
+
+                        var what_to_do = "<li>Melakukan olahraga secara teratur dapat membantu memelihara kesehatan jantung.</li> <li>Latihan kekuatan membantu membangun otot dan meningkatkan metabolisme tubuh.</li><li>Yoga dan meditasi dapat membantu mengurangi stres dan meningkatkan kesejahteraan fisik dan mental.</li>";
+
+                        var what_not_to_do = "<li>Konsumsi alkohol berlebihan dapat mempengaruhi kesehatan jantung dan menyebabkan berbagai masalah kesehatan</li><li>Hindari beraktivitas di tempat-tempat dengan tingkat polusi udara tinggi.</li><li>Manajemen stres melalui teknik relaksasi atau aktivitas yang menyenangkan dapat membantu mendukung kesehatan jantung.</li>";
+
+                        var what_to_eat = "<li>Ikan Berlemak.</li><li>Sayuran Hijau Daun.</li><li>Buah-buahan Beri.</li><li>Kacang-kacangan dan Biji-bijian.</li><li>Avokad.</li><li>Oatmeal.</li><li>Biji-bijian Utuh.</li><li>Minyak Zaitun.</li>";
+
+                        var what_not_to_eat = "<li>Garam Berlebihan</li><li>Makanan Tinggi Lemak Jenuh</li><li>Makanan Tinggi Kolesterol</li><li>Makanan Cepat Saji dan Makanan Olahan</li><li>Makanan Tinggi Gula dan Pemanis Buatan</li>";
+
+                     }else{
+
+                        var ketHR = "Tinggi";
+                        var perluHR = "Anda memerlukan latihan relaksasi seperti meditasi ringan. Anda juga harus memiliki pola tidur yang seimbang dan menghindari begadang. Anda harus menghindari kafein dan makanan Tinggi gula";
+
+
+                        var what_to_do = "<li>Melakukan Aktivitas seperti berjalan cepat, berenang, bersepeda, atau yoga.</li> <li>Latihan pernapasan terkontrol dan teknik relaksasi seperti yoga, meditasi, atau tai chi. </li><li>Aktivitas fisik sehari-hari seperti membersihkan rumah, berkebun, atau berbelanja dapat membantu menjaga tingkat aktivitas fisik.</li>";
+
+                        var what_not_to_do = "<li>Aktivitas Fisik Berat yang Tidak Terkendali.</li><li>Penggunaan Narkoba Terlarang atau Obat-obatan Stimulan.</li><li>Terpapar panas ekstrem atau sauna yang berlebihan dapat menyebabkan peningkatan tekanan darah.</li>";
+
+                        var what_to_eat = "<li>Ikan Berlemak.</li><li>Sayuran Hijau Daun.</li><li>Buah-buahan Beri.</li><li>Kacang-kacangan dan Biji-bijian.</li><li>Avokad.</li><li>Oatmeal.</li><li>Biji-bijian Utuh.</li><li>Minyak Zaitun.</li>";
+
+                        var what_not_to_eat = "<li>Garam Berlebihan</li><li>Makanan Tinggi Lemak Jenuh</li><li>Makanan Tinggi Kolesterol</li><li>Makanan Cepat Saji dan Makanan Olahan</li><li>Makanan Tinggi Gula dan Pemanis Buatan</li>";
+
+                     }
+
+                     $("#perluHR").html(perluHR);
+                     $("#ketHR").html(ketHR);
+                     $("#ket_detak").html(ketHR);
+
+                     $("#what_to_do").html(what_to_do);
+                     $("#what_not_to_do").html(what_not_to_do);
+                     $("#what_to_eat").html(what_to_eat);
+                     $("#what_not_to_eat").html(what_not_to_eat);
+                   }
+                }
+            })
+        }
+
+      function oxyNew(){
+            $.ajax({
+                url:"/oxyNew",
+                dataType:"JSON",
+                type:"GET",
+                success:function(data){
+                    var a = "";
+
+                    for (var i = 0; i < data.length; i++) {
+                     $("#oxyNew").html(data[i].spo2+" %");
+
+
+                       //setTimeout(reload, 1000);
+                       var oxy = data[i].spo2;
+                     $("#currentOxy").html(oxy);
+                     $("#nafas_sekarang").html(data[i].spo2+" %");
+
+
+
+                       if (oxy < 90) {
+                        var ketOxy = "Rendah";
+                        var perluOxy = "Anda harus mengtur pola pernafasan anda. Buka ruangan untuk sirkulasi udara. Jika Anda memiliki alergi atau sensitivitas tertentu yang dapat memicu kesulitan bernapas, hindarilah paparan terhadap pemicu tersebut. ";
+
+
+                        var what_to_do = "<li>Melakukan Latihan Pernapasan.</li> <li>Olahraga Ringan dan Teratur.</li><li>Yoga dan meditasi dapat membantu mengurangi stres.</li><li>Pijatan dan Terapi Tubuh</li>";
+
+                        var what_not_to_do = "<li>Hindari Paparan Asap Rokok dan Polusi Udara.</li><li>Hindari beraktivitas di tempat-tempat dengan tingkat polusi udara tinggi.</li><li>MHindari aktivitas fisik yang berlebihan atau terlalu intens.</li><li>Hindari Paparan Panas Berlebihan</li>";
+
+                        var what_to_eat = "<li>Makanan kaya antioksidan termasuk berbagai jenis buah-buahan dan sayuran, seperti blueberry, stroberi, bayam, brokoli, dan tomat.</li><li>Makanan serat tinggi seperti  gandum utuh, oatmeal, buah-buahan, dan sayuran.</li><li>Buah-buahan Beri.</li><li>Kacang-kacangan dan Biji-bijian.</li>";
+
+                        var what_not_to_eat = "<li>Garam Berlebihan</li><li>Makanan Tinggi Lemak Jenuh</li><li>Makanan Tinggi Kolesterol</li><li>Makanan Cepat Saji dan Makanan Olahan</li><li>Makanan Tinggi Gula dan Pemanis Buatan</li>";
+
+
+                       }else if(oxy >= 90 && oxy <=100){
+                           var ketOxy = "Normal ";
+                           var perluOxy = "Anda perlu menjaga pola hidup sehat.";
+
+
+                        var what_to_do = "<li>Melakukan Latihan Pernapasan.</li> <li>Olahraga Ringan dan Teratur.</li><li>Yoga dan meditasi dapat membantu mengurangi stres.</li><li>Pijatan dan Terapi Tubuh</li>";
+
+                        var what_not_to_do = "<li>Hindari Paparan Asap Rokok dan Polusi Udara.</li><li>Hindari beraktivitas di tempat-tempat dengan tingkat polusi udara tinggi.</li><li>MHindari aktivitas fisik yang berlebihan atau terlalu intens.</li><li>Hindari Paparan Panas Berlebihan</li>";
+
+                        var what_to_eat = "<li>Makanan kaya antioksidan termasuk berbagai jenis buah-buahan dan sayuran, seperti blueberry, stroberi, bayam, brokoli, dan tomat.</li><li>Makanan serat tinggi seperti  gandum utuh, oatmeal, buah-buahan, dan sayuran.</li><li>Buah-buahan Beri.</li><li>Kacang-kacangan dan Biji-bijian.</li>";
+
+                        var what_not_to_eat = "<li>Garam Berlebihan</li><li>Makanan Tinggi Lemak Jenuh</li><li>Makanan Tinggi Kolesterol</li><li>Makanan Cepat Saji dan Makanan Olahan</li><li>Makanan Tinggi Gula dan Pemanis Buatan</li>";
+
+                       }else{
+
+                           var ketOxy = "Tinggi ";
+                           var perluOxy = "Cobalah untuk bernapas secara teratur dan dalam melalui hidung, kemudian hembuskan perlahan melalui mulut. Fokuskan pada pernapasan yang teratur dan terkendali. Gunakan Teknik Pernapasan Dalam: Tarik napas dalam-dalam melalui hidung selama empat hitungan, tahan napas selama empat hitungan, dan kemudian hembuskan perlahan melalui mulut selama empat hitungan. Ulangi latihan ini beberapa kali.";
+
+
+                        var what_to_do = "<li>Melakukan Latihan Pernapasan.</li> <li>Olahraga Ringan dan Teratur.</li><li>Yoga dan meditasi dapat membantu mengurangi stres.</li><li>Pijatan dan Terapi Tubuh</li>";
+
+                        var what_not_to_do = "<li>Hindari Paparan Asap Rokok dan Polusi Udara.</li><li>Hindari beraktivitas di tempat-tempat dengan tingkat polusi udara tinggi.</li><li>MHindari aktivitas fisik yang berlebihan atau terlalu intens.</li><li>Hindari Paparan Panas Berlebihan</li>";
+
+                        var what_to_eat = "<li>Makanan kaya antioksidan termasuk berbagai jenis buah-buahan dan sayuran, seperti blueberry, stroberi, bayam, brokoli, dan tomat.</li><li>Makanan serat tinggi seperti  gandum utuh, oatmeal, buah-buahan, dan sayuran.</li><li>Buah-buahan Beri.</li><li>Kacang-kacangan dan Biji-bijian.</li>";
+
+                        var what_not_to_eat = "<li>Garam Berlebihan</li><li>Makanan Tinggi Lemak Jenuh</li><li>Makanan Tinggi Kolesterol</li><li>Makanan Cepat Saji dan Makanan Olahan</li><li>Makanan Tinggi Gula dan Pemanis Buatan</li>";
+
+
+                       }
+
+                       $("#perluOxy").html(perluOxy);
+                       $("#ketOxy").html(ketOxy);
+                       $("#ket_nafas").html(ketOxy);
+
+
+                     $("#what_to_do_nafas").html(what_to_do);
+                     $("#what_not_to_do_nafas").html(what_not_to_do);
+                     $("#what_to_eat_nafas").html(what_to_eat);
+                     $("#what_not_to_eat_nafas").html(what_not_to_eat);
+                     }
+                   
+                }
+            })
+        }
+
+              function gerakNew(){
+            $.ajax({
+                url:"/gerakNew",
+                dataType:"JSON",
+                type:"GET",
+                success:function(data){
+                    var a = "";
+
+                    for (var i = 0; i < data.length; i++) {
+
+                      var nomor = data[i].spo2;
+                      var ket = "";
+                      if (nomor == 1) {
+                        ket = "Tidak Bergerak";
+                      }else if(nomor == 2){
+                        ket = "Normal";
+
+                      }else{
+                        ket = "Aktif Bergerak";
+
+                      }
+                     // $("#gerakNew").html(ket);
+                     // $("#akselo_new").html(data[i].spo2+" %");
+
+
+                       //setTimeout(reload, 1000);
+                     }
+               
+                }
+            })
+        }
+
+             function suhuNew(){
+            $.ajax({
+                url:"/suhuNew",
+                dataType:"JSON",
+                type:"GET",
+                success:function(data){
+                    var a = "";
+
+                    for (var i = 0; i < data.length; i++) {
+                     $("#suhuNew").html(data[i].suhu+" °C");
+
+                       //setTimeout(reload, 1000);
+                       var suhu = data[i].suhu;
+
+                     $("#currentSuhu").html(suhu);
+                     $("#suhu_sekarang").html(suhu+" °C");
+
+                        if (suhu < 36) {
+                        var ketSuhu = "Rendah";
+                        var perluSuhu = "Anda perlu segera berpindah ke tempat hangat. Hindari Sentuhan dingin. Konsumsi makanan yang hangat dan segar ";
+
+
+
+                        var what_to_do = "<li>Kenakan Pakaian Hangat.</li> <li>Hindari Lingkungan Dingin.</li><li>Menggunakan Selimut atau Bantal Pemanas.</li><li>Konsumsi Minuman Hangat</li>";
+
+                        var what_not_to_do = "<li>Jangan mengabaikan gejala hipotermia seperti kedinginan yang berlebihan.</li><li>Hindari mandi dengan air dingin atau terlalu dingin karena ini dapat menurunkan suhu tubuh lebih lanjut.</li><li>Tidak Beraktivitas Fisik Berat</li>";
+
+                        var what_to_eat = "<li>Konsumsi makanan tinggi karbohidrat seperti roti, nasi, pasta, kentang, dan sereal.</li><li>Makanan Lemak sehat seperti alpukat, kacang-kacangan, biji-bijian, dan minyak zaitun</li><li>Konsumsi sumber protein seperti daging tanpa lemak, ikan, telur, tahu, dan kacang-kacangan.</li>";
+
+                        var what_not_to_eat = "<li>Makanan Dingin</li><li>Minuman Beralkohol</li><li>Minuman Berkafein Berlebihan</li><li>Makanan Tinggi Gula Sederhana</li><li>Makanan Tinggi Lemak Jenuh</li>";
+
+
+
+                       }else if(suhu >= 36 && suhu <=37){
+                           var ketSuhu = "Normal ";
+                           var perluSuhu = "Anda perlu menjaga pola hidup sehat.";
+
+
+                         var what_to_do = "<li>Berpartisipasi dalam olahraga atau aktivitas fisik seperti berjalan, berlari, bersepeda, berenang, atau yoga.</li> <li>Berkebun.</li><li>Bermain Musik atau Seni.</li><li>Menghadiri Acara Sosial atau Kegiatan Komunitas</li>";
+
+                        var what_not_to_do = "<li>Mengabaikan Kesehatan dan Kebersihan.</li><li>Konsumsi Alkohol Berlebihan</li><li>Kurang tidur dapat mempengaruhi kesehatan fisik dan mental.</li><li>Mengonsumsi Makanan Cepat Saji dan Makanan Olahan Berlebihan</li>";
+
+                        var what_to_eat = "<li>Buah-buahan dan Sayuran.</li><li Sumber protein termasuk daging tanpa lemak, ikan, telur, kacang-kacangan, tahu, dan tempe. </li><li>Makanan seperti beras coklat, quinoa, roti gandum utuh, dan sereal gandum</li>";
+
+                        var what_not_to_eat = "<li>Minuman Beralkohol</li><li>Minuman Berkafein Berlebihan</li><li>Makanan Tinggi Gula Sederhana</li><li>Makanan Tinggi Lemak Jenuh</li>";
+
+
+
+                       }else{
+
+                           var ketSuhu = "Tinggi ";
+                           var perluSuhu = "Anda perlu memiliki pola istirahat lebih dan minum banyak cairan. Gunakan kompres dingin untuk menetralisir suhu tubuh. Jika diperlukan, cari bantuan medis untuk kepastian treatment.";
+
+
+
+                         var what_to_do = "<li>Istirahat dan Relaksasi:</li> <li>Minum Banyak Cairan.</li><li>Mandi Air Hangat.</li><li>Kompress Dingin</li>";
+
+                        var what_not_to_do = "<li>Tidak Mengabaikan Demam</li><li>Tidak Mandi dengan Air Dingin</li><li>Tidak Mengonsumsi Minuman Beralkohol.</li><li>Tidak Berpakaian Terlalu Tebal</li>";
+
+                        var what_to_eat = "<li>Buah-buahan dan Sayuran.</li><li Sumber protein termasuk daging tanpa lemak, ikan, telur, kacang-kacangan, tahu, dan tempe. </li><li>Makanan seperti beras coklat, quinoa, roti gandum utuh, dan sereal gandum</li>";
+
+                        var what_not_to_eat = "<li>Makanan Dingin</li><li>Minuman Beralkohol</li><li>Minuman Berkafein Berlebihan</li><li>Makanan Tinggi Gula Sederhana</li><li>Makanan Tinggi Lemak Jenuh</li>";
+
+
+                       }
+
+                       $("#perluSuhu").html(perluSuhu);
+                       $("#ketSuhu").html(ketSuhu);
+                       $("#ket_suhu").html(ketSuhu);
+
+
+                     $("#what_to_do_suhu").html(what_to_do);
+                     $("#what_not_to_do_suhu").html(what_not_to_do);
+                     $("#what_to_eat_suhu").html(what_to_eat);
+                     $("#what_not_to_eat_suhu").html(what_not_to_eat);
+                     }
+                    
+                }
+            })
+        }
+
+           function grafikHr(dari,sampai){
+
+              if(dari == 0 || sampai == 0){
+    dari = `${year}-${month}-${day} 00:00:00`;
+    sampai = `${year}-${month}-${day} 23:59:59`;
+  }
+
+
+            $.ajax({
+                url:"/grafikHr?dari="+dari+"&sampai="+sampai,
+                dataType:"JSON",
+                type:"GET",
+                success:function(data){
+                  var array_hr = [];
+                  var array_oxy = [];
+                  var array_suhu = [];
+                  var array_time = [];
+
+                   var jml_detak = 0;
+                  for (var i=0;i<data.length;i++) {
+                  
+                  array_hr.push(data[i].hr);
+                  array_oxy.push(data[i].spo2);
+                  array_suhu.push(data[i].suhu);
+                  array_time.push(formatTime(data[i].timestamp));
+
+
+                  }
+             
+                  if ($("#order-chart").length) {
+                          var areaData = {
+                            labels: array_time,
+                            datasets: [{
+                                  label: 'Detak Jantung',
+                                  data: array_hr,
+                                  borderColor: '#FF4747',
+                                   type: 'line',
+                                },
+                                {
+                                  label: 'Pernafasan',
+                                  data: array_oxy,
+                                  backgroundColor: '#248AFD ',
+                                   type: 'bar',
+
+                                }
+                              ]
+                          };
+                           var areaOptions = {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: {
+                              filler: {
+                                propagate: true
+                              }
+                            },
+                             tooltips: {
+                                enabled: true,
+                                mode: 'index', // mode 'index' menampilkan tooltips untuk semua dataset di indeks yang sama
+                                intersect: false, // jika true, tooltips hanya akan ditampilkan ketika kursor berada di atas elemen yang sesuai dengan titik data
+                                callbacks: {
+                                  label: function(tooltipItem, data) {
+                                    var datasetLabel = data.datasets[tooltipItem.datasetIndex].label || '';
+                                    return datasetLabel + ': ' + tooltipItem.yLabel;
+                                  }
+                                }
+                              },
+                            scales: {
+                              xAxes: [{
+                                display: true,
+                                ticks: {
+                                  display: true,
+                                  padding: 10,
+                                  fontColor:"#6C7383"
+                                },
+                                gridLines: {
+                                  display: false,
+                                  drawBorder: false,
+                                  color: 'transparent',
+                                  zeroLineColor: '#eeeeee'
+                                }
+                              }],
+                              yAxes: [{
+                                display: true,
+                                ticks: {
+                                  display: true,
+                                  autoSkip: false,
+                                  maxRotation: 0,
+                                  stepSize: 200,
+                                  min: 0,
+                                  max: 150,
+                                  padding: 18,
+                                  fontColor:"#6C7383"
+                                },
+                                gridLines: {
+                                  display: true,
+                                  color:"#f2f2f2",
+                                  drawBorder: false
+                                }
+                              }]
+                            },
+                            legend: {
+                              display: true
+                            },
+                           
+                            elements: {
+                              line: {
+                                tension: .35
+                              },
+                              radius: 3, // Atur radius titik sesuai keinginan Anda
+                                  backgroundColor: '#FF4747', // Atur warna titik
+                                  borderColor: '#FF4747', // Atur warna pinggiran titik
+                                  borderWidth: 1 // Atur ketebalan pinggiran titik
+                            }
+                          }
+                          var revenueChartCanvas = $("#order-chart").get(0).getContext("2d");
+                          var revenueChart = new Chart(revenueChartCanvas, {
+                           
+                            data: areaData,
+                            options: areaOptions
+                          });
+
+                          
+                   }
+
+
+    //grafik suhu
+                     if ($("#sales-chart").length) {
+                              var SalesChartCanvas = $("#sales-chart").get(0).getContext("2d");
+                              var SalesChart = new Chart(SalesChartCanvas, {
+                                type: 'bar',
+                                data: {
+                                  labels: array_time,
+                                  datasets: [
+                                    {
+                                      label: 'Suhu',
+                                      data: array_suhu,
+                                      backgroundColor: '#57B657'
+                                    }
+                                  ]
+                                },
+                                options: {
+                                  cornerRadius: 5,
+                                  responsive: true,
+                                  maintainAspectRatio: true,
+                                  layout: {
+                                    padding: {
+                                      left: 0,
+                                      right: 0,
+                                      top: 20,
+                                      bottom: 0
+                                    }
+                                  },
+                                  scales: {
+                                    yAxes: [{
+                                      display: true,
+                                      gridLines: {
+                                        display: true,
+                                        drawBorder: false,
+                                        color: "#F2F2F2"
+                                      },
+                                      ticks: {
+                                        display: true,
+                                        min: 0,
+                                        max: 40,
+                                        callback: function(value, index, values) {
+                                          return  value + '°C' ;
+                                        },
+                                        autoSkip: true,
+                                        maxTicksLimit: 10,
+                                        fontColor:"#6C7383"
+                                      }
+                                    }],
+                                    xAxes: [{
+                                      stacked: false,
+                                      ticks: {
+                                        beginAtZero: true,
+                                        fontColor: "#6C7383"
+                                      },
+                                      gridLines: {
+                                        color: "rgba(0, 0, 0, 0)",
+                                        display: false
+                                      },
+                                      barPercentage: 1
+                                    }]
+                                  },
+                                  legend: {
+                                    display: false
+                                  },
+                                  elements: {
+                                    point: {
+                                      radius: 0
+                                    }
+                                  }
+                                },
+                              });
+                              document.getElementById('sales-legend').innerHTML = SalesChart.generateLegend();
+                            }
+
+
+                            //
+
+                }
+
+
+            })
+        }
+
+
+        function keaktifan_1(dari,sampai){
+           if(dari == 0 || sampai == 0){
+            dari = `${year}-${month}-${day} 00:00:00`;
+            sampai = `${year}-${month}-${day} 23:59:59`;
+          }
+            $.ajax({
+                url:"/keaktifan_1?dari="+dari+"&sampai="+sampai,
+                dataType:"JSON",
+                type:"GET",
+                success:function(data){
+
+
+
+                    
+                     array_label = [];
+                     array_value = [];
+                     for (var i=0;i<data.length;i++) {
+                      if (data[i].nomor == 1) {
+                        var keterangan = "Tidak Aktif Bergerak";
+                      }else  if (data[i].nomor == 2) {
+                        var keterangan = "Normal";
+                      }else  if (data[i].nomor == 3) {
+                        var keterangan = " Aktif Bergerak";
+                      }
+                       array_label.push(keterangan);
+                       array_value.push(data[i].counts);
+                     }
+
+
+
+
+
+                        if ($("#keaktifan_1").length) {
+                              var SalesChartCanvas = $("#keaktifan_1").get(0).getContext("2d");
+                              var SalesChart = new Chart(SalesChartCanvas, {
+                                type: 'polarArea',
+                                data: {
+                                  labels: array_label,
+                                  datasets: [
+                                    {
+
+                                      data: array_value,
+                                      backgroundColor: [/*danger*/'#FF4747',/*success*/'#57B657',/*warning*/'#FFC100']
+                                    }
+                                  ]
+                                },
+                                options: {
+                                  cornerRadius: 5,
+                                  responsive: true,
+                                  maintainAspectRatio: true,
+                                  layout: {
+                                    padding: {
+                                      left: 0,
+                                      right: 0,
+                                      top: 20,
+                                      bottom: 0
+                                    }
+                                  },
+                                  scales: {
+                                    yAxes: [{
+                                      display: true,
+                                      gridLines: {
+                                        display: true,
+                                        drawBorder: false,
+                                        color: "#F2F2F2"
+                                      },
+                                      ticks: {
+                                        display: true,
+                                        min: 0,
+                                        max: 40,
+                                        callback: function(value, index, values) {
+                                          return  value + '' ;
+                                        },
+                                        autoSkip: true,
+                                        maxTicksLimit: 10,
+                                        fontColor:"#6C7383"
+                                      }
+                                    }],
+                                    xAxes: [{
+                                      stacked: false,
+                                      ticks: {
+                                        beginAtZero: true,
+                                        fontColor: "#6C7383"
+                                      },
+                                      gridLines: {
+                                        color: "rgba(0, 0, 0, 0)",
+                                        display: false
+                                      },
+                                      barPercentage: 1
+                                    }]
+                                  },
+                                  legend: {
+                                    display: false
+                                  },
+                                  elements: {
+                                    point: {
+                                      radius: 0
+                                    }
+                                  }
+                                },
+                              });
+                              document.getElementById('sales-legend').innerHTML = SalesChart.generateLegend();
+                            }
+
+
+             
+
+
+                }
+            })
+        }
+
+
+           function keaktifan_2(dari,sampai){
+              if(dari == 0 || sampai == 0){
+            dari = `${year}-${month}-${day} 00:00:00`;
+            sampai = `${year}-${month}-${day} 23:59:59`;
+          }
+
+            $.ajax({
+                url:"/keaktifan_2?dari="+dari+"&sampai="+sampai,
+                dataType:"JSON",
+                type:"GET",
+                success:function(data){
+                    var a = "";
+
+
+                    console.log(data);
+                    for (var i = 0; i < data.length; i++) {
+                      var nomor = data[i].nomor;
+
+                      if (nomor == 1) {
+                        var a = "Tidak Aktif";
+                        var badge = "bg bg-danger";
+                        var saran = "Anda perlu mengubah kebiasaan anda untuk bergerak sesuai dengan batasan untuk janin yang lebih sehat. Hal ini juga untuk mengetasi kelelahan saat persalinan nanti.";
+                      }else if(nomor == 2){
+                        var a ="Normal";
+                        var badge = "bg bg-warning";
+                        var saran = "Bagus! Tingkatkan kenormalan pergerakan anda.";
+                      }else{
+                        var a = "Aktif Bergerak";
+                        var badge = "bg bg-success";
+                        var saran = "Batasi aktivitas fisik yang berat, jangan sampai Ibu kelelahan. Karena tentu saja kelelahan juga berdampak tidak baik pada janin. So, tetap bergerak dalam batas wajar saja ya, Bu!";
+                      }
+
+
+                     $("#keaktifan_2").html(a);
+                     $("#badge_aktif").addClass(badge);
+                     $("#saran_2").html(saran);
+
+                       $("#gerakNew").html(a);
+
+                     $("#ketAkselo").html(a);
+                     $("#perluAkselo").html(saran);
+
+                     
+
+                       //setTimeout(reload, 1000);
+                     }
+                    
+                }
+            })
+        }
+
+           function hrMax(dari,sampai){
+
+             if(dari == 0 || sampai == 0){
+            dari = `${year}-${month}-${day} 00:00:00`;
+            sampai = `${year}-${month}-${day} 23:59:59`;
+          }
+
+            $.ajax({
+                url:"/hrmax?dari="+dari+"&sampai="+sampai,
+                dataType:"JSON",
+                type:"GET",
+                success:function(data){
+                    var a = "";
+
+                    for (var i = 0; i < data.length; i++) {
+                     $("#hrMax").html(data[i].max+" BPM");
+
+                       //setTimeout(reload, 1000);
+                     }
+                    
+                }
+            })
+        }
+
+
+       function hrMin(dari,sampai){
+               if(dari == 0 || sampai == 0){
+            dari = `${year}-${month}-${day} 00:00:00`;
+            sampai = `${year}-${month}-${day} 23:59:59`;
+          }
+
+            $.ajax({
+                url:"/hrmin?dari="+dari+"&sampai="+sampai,
+                dataType:"JSON",
+                type:"GET",
+                success:function(data){
+                    var a = "";
+
+                    for (var i = 0; i < data.length; i++) {
+                     $("#hrMin").html(data[i].min+" BPM");
+
+                       //setTimeout(reload, 1000);
+                     }
+                    
+                }
+            })
+        }
+
+         function oxyMax(dari,sampai){
+                 if(dari == 0 || sampai == 0){
+            dari = `${year}-${month}-${day} 00:00:00`;
+            sampai = `${year}-${month}-${day} 23:59:59`;
+          }
+
+
+            $.ajax({
+                url:"/oxymax?dari="+dari+"&sampai="+sampai,
+                dataType:"JSON",
+                type:"GET",
+                success:function(data){
+                    var a = "";
+
+                    for (var i = 0; i < data.length; i++) {
+                     $("#oxyMax").html(data[i].max+" %");
+
+                       //setTimeout(reload, 1000);
+                     }
+                    
+                }
+            })
+        }
+
+
+       function oxyMin(dari,sampai){
+
+               if(dari == 0 || sampai == 0){
+            dari = `${year}-${month}-${day} 00:00:00`;
+            sampai = `${year}-${month}-${day} 23:59:59`;
+          }
+
+            $.ajax({
+                url:"/hrmin?dari="+dari+"&sampai="+sampai,
+                dataType:"JSON",
+                type:"GET",
+                success:function(data){
+                    var a = "";
+
+                    for (var i = 0; i < data.length; i++) {
+                     $("#oxyMin").html(data[i].min+" %");
+
+                       //setTimeout(reload, 1000);
+                     }
+                    
+                }
+            })
+        }
+
+
+function update_tgl(){
+  var dari = $("#dari").val();
+  var sampai = $("#sampai").val();
+
+
+            reload(dari,sampai);
+            heartNew();
+            oxyNew();
+            gerakNew();
+            suhuNew();
+            grafikHr(dari,sampai);
+            keaktifan_1(dari,sampai);
+            keaktifan_2(dari,sampai);
+            hrMax(dari,sampai);
+            hrMin(dari,sampai);
+            oxyMax(dari,sampai);
+            oxyMin(dari,sampai);
+
+            detak_page(dari,sampai);
+            nafas_page(dari,sampai);
+            suhu_page(dari,sampai);
+            akselo_page(dari,sampai);
+            pergerakan_sekarang(dari,sampai);
+
+
+}
+
+
+    function detak_page(dari,sampai){
+
+              if(dari == 0 || sampai == 0){
+    dari = `${year}-${month}-${day} 00:00:00`;
+    sampai = `${year}-${month}-${day} 23:59:59`;
+  }
+
+
+            $.ajax({
+                url:"/grafikHr?dari="+dari+"&sampai="+sampai,
+                dataType:"JSON",
+                type:"GET",
+                success:function(data){
+                  var array_hr = [];
+                  var array_oxy = [];
+                  var array_suhu = [];
+                  var array_time = [];
+                  var jml_detak = 0;
+                  var jml_oxy = 0;
+                  var jml_suhu = 0;
+                  for (var i=0;i<data.length;i++) {
+                  
+                  array_hr.push(data[i].hr);
+                  array_oxy.push(data[i].spo2);
+                  array_suhu.push(data[i].suhu);
+                  array_time.push(formatTime(data[i].timestamp));
+
+
+                  var byk_detak = parseInt(data.length);
+                  jml_detak += parseInt(data[i].hr);
+                  var rata_detak = jml_detak/byk_detak;
+                  $("#avg_detak").html(parseInt(rata_detak)+" BPM");
+
+                  var modus_detak = hitungModus(array_hr);
+                  $("#modus_detak").html(modus_detak+" BPM");
+
+
+                  var byk_oxy = parseInt(data.length);
+                  jml_oxy += parseInt(data[i].hr);
+                  var rata_oxy = jml_oxy/byk_oxy;
+                  $("#avg_oxy").html(parseInt(rata_oxy)+" %");
+
+                  var modus_oxy = hitungModus(array_hr);
+                  $("#modus_oxy").html(modus_oxy+" %");
+
+                  var byk_suhu = parseInt(data.length);
+                  jml_suhu += parseInt(data[i].hr);
+                  var rata_suhu = jml_suhu/byk_suhu;
+                  $("#avg_suhu").html(parseInt(rata_suhu)+"  °C");
+
+                  var modus_suhu = hitungModus(array_hr);
+                  $("#modus_suhu").html(modus_suhu+"  °C");
+
+
+
+                  }
+             
+                  if ($("#detak_page").length) {
+
+                          var areaData = {
+                            labels: array_time,
+                            datasets: [{
+                                  label: 'Detak Jantung',
+                                  data: array_hr,
+                                  borderColor: '#FF4747',
+                                   type: 'line',
+                                },
+                             
+                              ]
+                          };
+                          var areaOptions = {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: {
+                              filler: {
+                                propagate: true
+                              }
+                            },
+                             tooltips: {
+                                enabled: true,
+                                mode: 'index', // mode 'index' menampilkan tooltips untuk semua dataset di indeks yang sama
+                                intersect: false, // jika true, tooltips hanya akan ditampilkan ketika kursor berada di atas elemen yang sesuai dengan titik data
+                                callbacks: {
+                                  label: function(tooltipItem, data) {
+                                    var datasetLabel = data.datasets[tooltipItem.datasetIndex].label || '';
+                                    return datasetLabel + ': ' + tooltipItem.yLabel;
+                                  }
+                                }
+                              },
+                            scales: {
+                              xAxes: [{
+                                display: true,
+                                ticks: {
+                                  display: true,
+                                  padding: 10,
+                                  fontColor:"#6C7383"
+                                },
+                                gridLines: {
+                                  display: false,
+                                  drawBorder: false,
+                                  color: 'transparent',
+                                  zeroLineColor: '#eeeeee'
+                                }
+                              }],
+                              yAxes: [{
+                                display: true,
+                                ticks: {
+                                  display: true,
+                                  autoSkip: false,
+                                  maxRotation: 0,
+                                  stepSize: 200,
+                                  min: 0,
+                                  max: 150,
+                                  padding: 18,
+                                  fontColor:"#6C7383"
+                                },
+                                gridLines: {
+                                  display: true,
+                                  color:"#f2f2f2",
+                                  drawBorder: false
+                                }
+                              }]
+                            },
+                            legend: {
+                              display: true
+                            },
+                           
+                            elements: {
+                              line: {
+                                tension: .35
+                              },
+                              radius: 3, // Atur radius titik sesuai keinginan Anda
+                                  backgroundColor: '#FF4747', // Atur warna titik
+                                  borderColor: '#FF4747', // Atur warna pinggiran titik
+                                  borderWidth: 1 // Atur ketebalan pinggiran titik
+                            }
+                          }
+                          var revenueChartCanvas = $("#detak_page").get(0).getContext("2d");
+                          var revenueChart = new Chart(revenueChartCanvas, {
+                           
+                            data: areaData,
+                            options: areaOptions
+                          });
+
+                          
+                   }
+
+                            //
+
+                }
+
+
+            })
+        }
+
+
+
+
+    function nafas_page(dari,sampai){
+
+              if(dari == 0 || sampai == 0){
+    dari = `${year}-${month}-${day} 00:00:00`;
+    sampai = `${year}-${month}-${day} 23:59:59`;
+  }
+
+
+            $.ajax({
+                url:"/grafikHr?dari="+dari+"&sampai="+sampai,
+                dataType:"JSON",
+                type:"GET",
+                success:function(data){
+                  var array_hr = [];
+                  var array_oxy = [];
+                  var array_suhu = [];
+                  var array_time = [];
+                  var jml_detak = 0;
+                  var jml_oxy = 0;
+                  var jml_suhu = 0;
+                  for (var i=0;i<data.length;i++) {
+                  
+                  array_hr.push(data[i].hr);
+                  array_oxy.push(data[i].spo2);
+                  array_suhu.push(data[i].suhu);
+                  array_time.push(formatTime(data[i].timestamp));
+
+
+            
+
+
+                  var byk_oxy = parseInt(data.length);
+                  jml_oxy += parseInt(data[i].spo2);
+                  var rata_oxy = jml_oxy/byk_oxy;
+                  $("#avg_nafas").html(parseInt(rata_oxy)+" %");
+
+                  var modus_oxy = hitungModus(array_oxy);
+                  $("#modus_nafas").html(modus_oxy+" %");
+
+                 
+
+
+                  }
+             
+                  if ($("#nafas_page").length) {
+
+                          var areaData = {
+                            labels: array_time,
+                            datasets: [  {
+                                  label: 'Pernafasan',
+                                  data: array_oxy,
+                                  backgroundColor: '#248AFD ',
+                                   type: 'bar',
+
+                                }
+                             
+                              ]
+                          };
+                          var areaOptions = {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: {
+                              filler: {
+                                propagate: true
+                              }
+                            },
+                             tooltips: {
+                                enabled: true,
+                                mode: 'index', // mode 'index' menampilkan tooltips untuk semua dataset di indeks yang sama
+                                intersect: false, // jika true, tooltips hanya akan ditampilkan ketika kursor berada di atas elemen yang sesuai dengan titik data
+                                callbacks: {
+                                  label: function(tooltipItem, data) {
+                                    var datasetLabel = data.datasets[tooltipItem.datasetIndex].label || '';
+                                    return datasetLabel + ': ' + tooltipItem.yLabel;
+                                  }
+                                }
+                              },
+                            scales: {
+                              xAxes: [{
+                                display: true,
+                                ticks: {
+                                  display: true,
+                                  padding: 10,
+                                  fontColor:"#6C7383"
+                                },
+                                gridLines: {
+                                  display: false,
+                                  drawBorder: false,
+                                  color: 'transparent',
+                                  zeroLineColor: '#eeeeee'
+                                }
+                              }],
+                              yAxes: [{
+                                display: true,
+                                ticks: {
+                                  display: true,
+                                  autoSkip: false,
+                                  maxRotation: 0,
+                                  stepSize: 200,
+                                  min: 0,
+                                  max: 150,
+                                  padding: 18,
+                                  fontColor:"#6C7383"
+                                },
+                                gridLines: {
+                                  display: true,
+                                  color:"#f2f2f2",
+                                  drawBorder: false
+                                }
+                              }]
+                            },
+                            legend: {
+                              display: true
+                            },
+                           
+                            elements: {
+                              line: {
+                                tension: .35
+                              },
+                              radius: 3, // Atur radius titik sesuai keinginan Anda
+                                  backgroundColor: '#FF4747', // Atur warna titik
+                                  borderColor: '#FF4747', // Atur warna pinggiran titik
+                                  borderWidth: 1 // Atur ketebalan pinggiran titik
+                            }
+                          }
+                          var revenueChartCanvas = $("#nafas_page").get(0).getContext("2d");
+                          var revenueChart = new Chart(revenueChartCanvas, {
+                           
+                            data: areaData,
+                            options: areaOptions
+                          });
+
+                          
+                   }
+
+                            //
+
+                }
+
+
+            })
+        }
+
+
+    function suhu_page(dari,sampai){
+
+              if(dari == 0 || sampai == 0){
+    dari = `${year}-${month}-${day} 00:00:00`;
+    sampai = `${year}-${month}-${day} 23:59:59`;
+  }
+
+
+            $.ajax({
+                url:"/grafikHr?dari="+dari+"&sampai="+sampai,
+                dataType:"JSON",
+                type:"GET",
+                success:function(data){
+                  var array_hr = [];
+                  var array_oxy = [];
+                  var array_suhu = [];
+                  var array_time = [];
+                  var jml_detak = 0;
+                  var jml_oxy = 0;
+                  var jml_suhu = 0;
+                  for (var i=0;i<data.length;i++) {
+                  
+                  array_hr.push(data[i].hr);
+                  array_oxy.push(data[i].spo2);
+                  array_suhu.push(data[i].suhu);
+                  array_time.push(formatTime(data[i].timestamp));
+
+
+            
+
+
+                  var byk_suhu = parseInt(data.length);
+                  jml_suhu += parseInt(data[i].suhu);
+                  var rata_suhu = jml_suhu/byk_suhu;
+                  $("#avg_suhu").html(parseInt(rata_suhu)+" °C");
+
+                  var modus_suhu = hitungModus(array_suhu);
+                  $("#modus_suhu").html(modus_suhu+" °C");
+
+                 
+
+
+                  }
+             
+                  if ($("#suhu_page").length) {
+
+                          var areaData = {
+                            labels: array_time,
+                            datasets: [  {
+                                  label: 'Suhu Tubuh',
+                                  data: array_suhu,
+                                  backgroundColor: '#57B657 ',
+                                   type: 'bar',
+
+                                }
+                             
+                              ]
+                          };
+                          var areaOptions = {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: {
+                              filler: {
+                                propagate: true
+                              }
+                            },
+                             tooltips: {
+                                enabled: true,
+                                mode: 'index', // mode 'index' menampilkan tooltips untuk semua dataset di indeks yang sama
+                                intersect: false, // jika true, tooltips hanya akan ditampilkan ketika kursor berada di atas elemen yang sesuai dengan titik data
+                                callbacks: {
+                                  label: function(tooltipItem, data) {
+                                    var datasetLabel = data.datasets[tooltipItem.datasetIndex].label || '';
+                                    return datasetLabel + ': ' + tooltipItem.yLabel;
+                                  }
+                                }
+                              },
+                            scales: {
+                              xAxes: [{
+                                display: true,
+                                ticks: {
+                                  display: true,
+                                  padding: 10,
+                                  fontColor:"#6C7383"
+                                },
+                                gridLines: {
+                                  display: false,
+                                  drawBorder: false,
+                                  color: 'transparent',
+                                  zeroLineColor: '#eeeeee'
+                                }
+                              }],
+                              yAxes: [{
+                                display: true,
+                                ticks: {
+                                  display: true,
+                                  autoSkip: false,
+                                  maxRotation: 0,
+                                  stepSize: 200,
+                                  min: 0,
+                                  max: 42,
+                                  padding: 18,
+                                  fontColor:"#6C7383"
+                                },
+                                gridLines: {
+                                  display: true,
+                                  color:"#f2f2f2",
+                                  drawBorder: false
+                                }
+                              }]
+                            },
+                            legend: {
+                              display: true
+                            },
+                           
+                            elements: {
+                              line: {
+                                tension: .35
+                              },
+                              radius: 3, // Atur radius titik sesuai keinginan Anda
+                                  backgroundColor: '#FF4747', // Atur warna titik
+                                  borderColor: '#FF4747', // Atur warna pinggiran titik
+                                  borderWidth: 1 // Atur ketebalan pinggiran titik
+                            }
+                          }
+                          var revenueChartCanvas = $("#suhu_page").get(0).getContext("2d");
+                          var revenueChart = new Chart(revenueChartCanvas, {
+                           
+                            data: areaData,
+                            options: areaOptions
+                          });
+
+                          
+                   }
+
+                            //
+
+                }
+
+
+            })
+        }
+
+
+
+
+
+
+        function akselo_page(dari,sampai){
+           if(dari == 0 || sampai == 0){
+            dari = `${year}-${month}-${day} 00:00:00`;
+            sampai = `${year}-${month}-${day} 23:59:59`;
+          }
+            $.ajax({
+                url:"/keaktifan_1?dari="+dari+"&sampai="+sampai,
+                dataType:"JSON",
+                type:"GET",
+                success:function(data){
+
+
+
+                    
+                     array_label = [];
+                     array_value = [];
+                     for (var i=0;i<data.length;i++) {
+                      if (data[i].nomor == 1) {
+                        var keterangan = "Tidak Aktif Bergerak";
+                      }else  if (data[i].nomor == 2) {
+                        var keterangan = "Normal";
+                      }else  if (data[i].nomor == 3) {
+                        var keterangan = " Aktif Bergerak";
+                      }
+                       array_label.push(keterangan);
+                       array_value.push(data[i].counts);
+                     }
+
+
+
+
+
+                        if ($("#akselo_page").length) {
+                              var SalesChartCanvas = $("#akselo_page").get(0).getContext("2d");
+                              var SalesChart = new Chart(SalesChartCanvas, {
+                                type: 'polarArea',
+                                data: {
+                                  labels: array_label,
+                                  datasets: [
+                                    {
+
+                                      data: array_value,
+                                      backgroundColor: [/*danger*/'#FF4747',/*success*/'#57B657',/*warning*/'#FFC100']
+                                    }
+                                  ]
+                                },
+                                options: {
+                                  cornerRadius: 5,
+                                  responsive: true,
+                                  maintainAspectRatio: true,
+                                  layout: {
+                                    padding: {
+                                      left: 0,
+                                      right: 0,
+                                      top: 20,
+                                      bottom: 0
+                                    }
+                                  },
+                                  scales: {
+                                    yAxes: [{
+                                      display: true,
+                                      gridLines: {
+                                        display: true,
+                                        drawBorder: false,
+                                        color: "#F2F2F2"
+                                      },
+                                      ticks: {
+                                        display: true,
+                                        min: 0,
+                                        max: 40,
+                                        callback: function(value, index, values) {
+                                          return  value + '' ;
+                                        },
+                                        autoSkip: true,
+                                        maxTicksLimit: 10,
+                                        fontColor:"#6C7383"
+                                      }
+                                    }],
+                                    xAxes: [{
+                                      stacked: false,
+                                      ticks: {
+                                        beginAtZero: true,
+                                        fontColor: "#6C7383"
+                                      },
+                                      gridLines: {
+                                        color: "rgba(0, 0, 0, 0)",
+                                        display: false
+                                      },
+                                      barPercentage: 1
+                                    }]
+                                  },
+                                  legend: {
+                                    display: false
+                                  },
+                                  elements: {
+                                    point: {
+                                      radius: 0
+                                    }
+                                  }
+                                },
+                              });
+                              document.getElementById('akselo_page').innerHTML = SalesChart.generateLegend();
+                            }
+
+
+             
+
+
+                }
+            })
+        }
+
+
+
+   function pergerakan_sekarang(dari,sampai){
+
+      if(dari == 0 || sampai == 0){
+            dari = `${year}-${month}-${day} 00:00:00`;
+            sampai = `${year}-${month}-${day} 23:59:59`;
+          }
+
+
+
+            $.ajax({
+                url:"/pergerakan_sekarang?dari="+dari+"&sampai="+sampai,
+                dataType:"JSON",
+                type:"GET",
+                success:function(data){
+                    var a = "";
+
+                    var jml_akselo = 0;
+                    var array_akselo = [];
+
+                    for (var i = 0; i < data.length; i++) {
+
+                  array_akselo.push(data[i].modus);
+
+
+                      var nomor = data[i].nomor;
+                      var ket = "";
+                      if (nomor == 1) {
+                        ket = "Tidak Aktif Bergerak";
+                           var what_to_do = "<li>Olahraga atau Aktivitas Fisik yang Disukai</li> <li>Bergabung dengan Kelas Kebugaran.</li><li>Lakukan aktivitas-aktivitas kecil seperti streching untuk menjaga kebugaran.</li>";
+
+                        var what_not_to_do = "<li>Hindari Terlalu banyak istirahat</li><li>Hindari kecanduan memainkan ponsel.</li><li>Hindari Konsumsi Kolesterol tinggi yang memicu dopamine.</li><li>Hindari mengonsumsi minuman berkafein.</li>";
+
+                        var what_to_eat = "<li>Ikan Berlemak.</li><li>Sayuran Hijau Daun.</li><li>Buah-buahan Beri.</li><li>Kacang-kacangan dan Biji-bijian.</li><li>Avokad.</li><li>Oatmeal.</li><li>Biji-bijian Utuh.</li><li>Minyak Zaitun.</li>";
+
+                        var what_not_to_eat = "<li>Garam Berlebihan</li><li>Makanan Tinggi Lemak Jenuh</li><li>Makanan Tinggi Kolesterol</li><li>Makanan Cepat Saji dan Makanan Olahan</li><li>Makanan Tinggi Gula dan Pemanis Buatan</li>";
+                      }else if(nomor == 2){
+                        ket = "Normal";
+                          var what_to_do = "<li>Olahraga atau Aktivitas Fisik yang Disukai</li> <li>Stabilkan gerak olah badan.</li><li>Jaga kebugaran dengan mengonsumsi makanan sehat.</li>";
+
+                        var what_not_to_do = "<li>Hindari Terlalu banyak istirahat</li><li>Hindari kecanduan memainkan ponsel.</li><li>Hindari Konsumsi Kolesterol tinggi yang memicu dopamine.</li><li>Hindari mengonsumsi minuman berkafein.</li>";
+
+                        var what_to_eat = "<li>Ikan Berlemak.</li><li>Sayuran Hijau Daun.</li><li>Buah-buahan Beri.</li><li>Kacang-kacangan dan Biji-bijian.</li><li>Avokad.</li><li>Oatmeal.</li><li>Biji-bijian Utuh.</li><li>Minyak Zaitun.</li>";
+
+                        var what_not_to_eat = "<li>Garam Berlebihan</li><li>Makanan Tinggi Lemak Jenuh</li><li>Makanan Tinggi Kolesterol</li><li>Makanan Cepat Saji dan Makanan Olahan</li><li>Makanan Tinggi Gula dan Pemanis Buatan</li>";
+
+                      }else{
+                        ket = "Aktif Bergerak";
+
+                          var what_to_do = "<li>Jaga pola tidur</li> <li>Jaga pola makan</li><li>Jangan melakukan aktivitas diluar kemampuan tubuh.</li>";
+
+                        var what_not_to_do = "<li>Hindari Aktivitas berlebih</li><li>Hindari mengangkat beban yang tidak mampu diangkat tubuh.</li><li>Hindari Konsumsi Kolesterol tinggi yang memicu dopamine.</li><li>Hindari mengonsumsi minuman berkafein.</li>";
+
+                        var what_to_eat = "<li>Ikan Berlemak.</li><li>Sayuran Hijau Daun.</li><li>Buah-buahan Beri.</li><li>Kacang-kacangan dan Biji-bijian.</li><li>Avokad.</li><li>Oatmeal.</li><li>Biji-bijian Utuh.</li><li>Minyak Zaitun.</li>";
+
+                        var what_not_to_eat = "<li>Garam Berlebihan</li><li>Makanan Tinggi Lemak Jenuh</li><li>Makanan Tinggi Kolesterol</li><li>Makanan Cepat Saji dan Makanan Olahan</li><li>Makanan Tinggi Gula dan Pemanis Buatan</li>";
+
+                      }
+                     // $("#gerakNew").html(ket);
+                     // $("#akselo_new").html(data[i].spo2+" %");
+
+                     $("#akselo_sekarang").html(data[i].modus+" m/s²");
+                     $("#ket_akselo").html(data[i].ket);
+
+                      var byk_akselo = parseInt(data.length);
+                      jml_akselo += parseInt(data[i].modus);
+                      var rata_akselo = jml_akselo/byk_akselo;
+                      $("#avg_akselo").html(parseInt(rata_akselo)+" m/s²");
+
+                      var modus_akselo = hitungModus(array_akselo);
+                      $("#modus_akselo").html(modus_akselo+" m/s²");
+
+
+                     $("#what_to_do_akselo").html(what_to_do);
+                     $("#what_not_to_do_akselo").html(what_not_to_do);
+                     $("#what_to_eat_akselo").html(what_to_eat);
+                     $("#what_not_to_eat_akselo").html(what_not_to_eat);
+
+                       //setTimeout(reload, 1000);
+                     }
+               
+                }
+            })
+        }
+
+
+        function getAllJadwal(){
+          $.ajax({
+            url:"/getAll-jadwal",
+            method:"GET",
+            dataType:"JSON",
+            success:function(data){
+              console.log(data);
+               var a = "";
+var nomor = 1;
+              for(var i = 0;i < data.length ;i++ ){
+                a+="<tr>";
+
+                 a += "<td>"+ nomor++ +"</td>";
+                 a += "<td>"+ data[i].timestamp +"</td>";
+                 a += "<td>"+ data[i].timestamp +"</td>";
+
+                 a += "<td>"+ data[i].judul_kegiatan +"</td>";
+                 a += "<td>"+ data[i].uraian_kegiatan +"</td>";
+                 a += "<td> <button class='btn btn-warning'>Edit </button> <button class='btn btn-danger'>hapus </button></td>";
+                 a +="</tr>";
+
+              }
+
+              console.log(a);
+              
+              $("#tabel12 tbody").html(a);
+
+            }
+          });
+        }
+
+///
+function hitungModus(arr) {
+    let frekuensi = {};
+    let modus = [];
+    let maxFrekuensi = 0;
+
+    // Mencari frekuensi kemunculan setiap elemen dalam array
+    for (let i = 0; i < arr.length; i++) {
+        if (frekuensi[arr[i]]) {
+            frekuensi[arr[i]]++;
+        } else {
+            frekuensi[arr[i]] = 1;
+        }
+        
+        if (frekuensi[arr[i]] > maxFrekuensi) {
+            maxFrekuensi = frekuensi[arr[i]];
+        }
+    }
+
+    // Memasukkan elemen dengan frekuensi tertinggi ke dalam array modus
+    for (let key in frekuensi) {
+        if (frekuensi[key] === maxFrekuensi) {
+            modus.push(key);
+        }
+    }
+
+    // Jika semua elemen memiliki frekuensi yang sama
+    if (modus.length === Object.keys(frekuensi).length) {
+        modus = [];
+    }
+
+    return modus;
+}
+</script>
+

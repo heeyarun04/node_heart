@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Data DB</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+</head>
+<body style="background: lightgray">
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-12">
+
+               
+                <div class="card border-0 shadow rounded">
+                    <div class="card-body">
+                        <div class="col-7" >
+                                <h1 class="text-white bg-success" style="padding: 10px; border-radius: 10px;">SMARTWATCH MONITORING</h1>
+                                                        
+                        </div>
+                                      
+                        <table class="table table-bordered" id="table">
+                            <thead>
+                              <tr>
+                                <th scope="col">NO.</th>
+                                <th scope="col">Heart Rate</th>
+                                <th scope="col">SPO2</th>
+                                <th scope="col">AkseloX</th>
+                                <th scope="col">AkseloY</th>
+                                <th scope="col">AkseloZ</th>
+                                <th scope="col">Suhu</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <!--   <% for(var i = 0; i< data.length; i++) {%>  
+                                        <tr>
+                                            <th scope="row" class="text-center"><%= (i+1) %></th>
+                                          
+                                            <td><%= data[i].hr%></td>
+                                            <td><%= data[i].spo2%></td>
+                                            <td><%= data[i].akselox%></td>
+                                            <td><%= data[i].akseloy%></td>
+                                            <td><%= data[i].akseloz%></td>
+                                          
+                                        </tr>
+                                  
+                                    
+                                <% } %>     --> 
+                            </tbody>
+                        </table>  
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    </script>
+
+    <script type="text/javascript">
+        $('document').ready(function(){
+            reload();
+
+        });
+
+
+
+        function reload(){
+            $.ajax({
+                url:"http://127.0.0.1:3000/reload",
+                dataType:"JSON",
+                type:"GET",
+                success:function(data){
+                    var a = "";
+
+                    for (var i = 0; i < data.length; i++) {
+                        a += `<tr>`;
+                        a += `<td>`+ parseInt(i+1) +`</td>`;
+                        a += `<td>`+data[i].hr+`BPM</td>`;
+                        a += `<td>`+data[i].spo2+`%</td>`;
+                        a += `<td>`+data[i].akselox+`</td>`;
+                        a += `<td>`+data[i].akseloy+`</td>`;
+                        a += `<td>`+data[i].akseloz+`</td>`;
+                        a += `<td>`+data[i].suhu+` °C</td>`;
+                        a += `<tr>`;
+                        }
+
+                        $("#table tbody").html(a);
+
+
+                       //setTimeout(reload, 1000);
+                    console.log(data);
+                }
+            })
+        }
+    </script>
+
+</body>
+</html>
