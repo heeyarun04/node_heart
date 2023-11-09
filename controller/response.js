@@ -371,14 +371,14 @@ async function pergerakan_sekarang(req, res) {
 }
 
 async function buatJadwal(req,res){
-  const { timestamp, judul_kegiatan, uraian_kegiatan } = req.body;
+  const {  judul_kegiatan, uraian_kegiatan } = req.body;
 
   const insertQuery =
-    "INSERT INTO jadwal (timestamp, judul_kegiatan, uraian_kegiatan) VALUES ($1, $2, $3) RETURNING id_jadwal";
+    "INSERT INTO jadwal ( judul_kegiatan, uraian_kegiatan) VALUES ($1, $2) RETURNING id_jadwal";
 
   try {
     const result = await pool.query(insertQuery, [
-      timestamp,
+      
       judul_kegiatan,
       uraian_kegiatan,
     ]);
@@ -409,34 +409,19 @@ async function getAllJadwal(req, res) {
   }
 }
 
-async function getJadwalById(req, res) {
-  const id = req.params.id;
-  const selectQuery = "SELECT * FROM jadwal WHERE id_jadwal = $1";
-
-  try {
-    const result = await pool.query(selectQuery, [id]);
-    const jadwal = result.rows[0];
-
-    if (jadwal) {
-      res.status(200).json(jadwal);
-    } else {
-      res.status(404).json({ message: "Jadwal tidak ditemukan" });
-    }
-  } catch (error) {
-    console.error("Gagal mengambil jadwal", error);
-    res.status(500).json({ message: "Gagal mengambil jadwal" });
-  }
-}
 
 async function updateJadwal(req, res) {
   const id = req.params.id;
-  const { timestamp, judul_kegiatan, uraian_kegiatan } = req.body;
+  const { judul_kegiatan, uraian_kegiatan } = req.body;
 
   const updateQuery =
-    "UPDATE jadwal SET timestamp = $2, judul_kegiatan = $3, uraian_kegiatan = $4 WHERE id_jadwal = $1";
+    "UPDATE jadwal SET judul_kegiatan = $3, uraian_kegiatan = $4 WHERE id_jadwal = $1";
 
   try {
-    await pool.query(updateQuery, [timestamp, judul_kegiatan, uraian_kegiatan, id]);
+    await pool.query(updateQuery, [
+      judul_kegiatan, 
+      uraian_kegiatan, 
+      id]);
     res.status(200).json({ message: "Jadwal berhasil diperbarui" });
   } catch (error) {
     console.error("Gagal memperbarui jadwal", error);
@@ -500,7 +485,6 @@ module.exports = {
   sendAkselo,
   buatJadwal,
   getAllJadwal,
-  getJadwalById,
   updateJadwal,
   deleteJadwal,
   detak,

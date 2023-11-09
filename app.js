@@ -51,7 +51,7 @@ app.get('/sendakselo', require("./controller/response").sendAkselo);
 
 //CRUD
 // Endpoint untuk membuat jadwal
-app.post('/buat-jadwal', require("./controller/response").buatJadwal);
+app.post('/tambah-jadwal', require("./controller/response").buatJadwal);
 // Endpoint untuk mengambil semua jadwal
 app.get('/getAll-jadwal', require("./controller/response").getAllJadwal);
 // Endpoint untuk mengambil jadwal berdasarkan ID

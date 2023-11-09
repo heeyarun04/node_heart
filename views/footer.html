@@ -84,7 +84,14 @@ const seconds = currentDate.getSeconds();
             pergerakan_sekarang(0,0);
 
             getAllJadwal();
+
+
+    $('#tambahButton').click(function () {
+      $('#tambahJadwalModal').modal('show');
+     });
         });
+
+
 
     function openWheater(){
       $.ajax({  
@@ -1387,10 +1394,7 @@ function update_tgl(){
                 dataType:"JSON",
                 type:"GET",
                 success:function(data){
-
-
-
-                    
+                  
                      array_label = [];
                      array_value = [];
                      for (var i=0;i<data.length;i++) {
@@ -1576,36 +1580,84 @@ function update_tgl(){
         }
 
 
-        function getAllJadwal(){
-          $.ajax({
-            url:"/getAll-jadwal",
-            method:"GET",
-            dataType:"JSON",
-            success:function(data){
-              console.log(data);
-               var a = "";
-var nomor = 1;
-              for(var i = 0;i < data.length ;i++ ){
-                a+="<tr>";
+    // Memuat data jadwal saat halaman dimuat
+    
+  
+    function tambahJadwal() {
+  // Mengambil nilai dari input form
+  var judul_kegiatan = $("#judulInput").val();
+  var uraian_kegiatan = $("#uraianInput").val();
 
-                 a += "<td>"+ nomor++ +"</td>";
-                 a += "<td>"+ data[i].timestamp +"</td>";
-                 a += "<td>"+ data[i].timestamp +"</td>";
+  // Membuat objek data untuk dikirim ke server
+  var data = {
+    judul_kegiatan: judul_kegiatan,
+    uraian_kegiatan: uraian_kegiatan,
+  };
 
-                 a += "<td>"+ data[i].judul_kegiatan +"</td>";
-                 a += "<td>"+ data[i].uraian_kegiatan +"</td>";
-                 a += "<td> <button class='btn btn-warning'>Edit </button> <button class='btn btn-danger'>hapus </button></td>";
-                 a +="</tr>";
+  // Mengirim data ke server menggunakan AJAX
+  $.ajax({
+    url: "/tambah-jadwal", // Ganti dengan URL yang sesuai
+    method: "POST", // Menggunakan metode POST untuk menambahkan data
+    dataType: "JSON",
+    data: data,
+    success: function(response) {
+      
+      console.log("Jadwal berhasil ditambahkan:", response);
+      
+      // menutup modal
+      $("#tambahJadwalModal").modal("hide");
+      
+      // memperbarui tampilan jadwal
+      getAllJadwal(); 
+    },
+    error: function(error) {
+      // Menangani kesalahan jika ada
+      console.error("Gagal menambahkan jadwal:", error);
+    },
+  });
+}
 
-              }
+    function getAllJadwal() {
+      $.ajax({
+        url: "/getAll-jadwal", 
+        method: "GET",
+        dataType: "JSON",
+        success: function(data) {
+          var jadwalHTML = "";
+          
 
-              console.log(a);
-              
-              $("#tabel12 tbody").html(a);
+          for (var i = 0; i < data.length; i++) {
+            jadwalHTML += "<tr>";
+            jadwalHTML += "<td>" + (i + 1) + "</td>";
+            jadwalHTML += "<td>" + data[i].timestamp + "</td>";
+            jadwalHTML += "<td>" + data[i].timestamp + "</td>";
 
-            }
-          });
+            jadwalHTML += "<td>" + data[i].judul_kegiatan + "</td>";
+            jadwalHTML += "<td>" + data[i].uraian_kegiatan + "</td>";
+            jadwalHTML += "<td><button class='btn btn-warning' onclick='editJadwal(" + data[i].id_jadwal + ")'>Edit</button> <button class='btn btn-danger' onclick='hapusJadwal(" + data[i].id_jadwal + ")'>Hapus</button></td>";
+            jadwalHTML += "</tr>";
+          }
+
+          $("#tabel12 tbody").html(jadwalHTML);
+        },
+        error: function(error) {
+          console.error("Gagal memuat data jadwal:", error);
         }
+      });
+    }
+
+    // Fungsi untuk menangani klik tombol Edit
+    function editJadwal(id) {
+      // Gantilah ini dengan logika tampilan edit jadwal jika diperlukan
+      // Contoh: tampilkan modal atau navigasikan ke halaman edit jadwal.
+    }
+
+    // Fungsi untuk menangani klik tombol Hapus
+    function hapusJadwal(id) {
+      // Gantilah ini dengan logika penghapusan jadwal jika diperlukan
+      console.log("Hapus jadwal dengan ID:", id);
+    }
+  
 
 ///
 function hitungModus(arr) {
